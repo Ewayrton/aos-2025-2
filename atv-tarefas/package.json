@@ -9,5 +9,15 @@
   "author": "Ewayrton Oliveira <ewayrtonbrito@gmail.com> (https://example.com/)",
   "license": "MIT",
   "type": "commonjs",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "@babel/core": "^7.28.4",
+    "@babel/node": "^7.28.0",
+    "@babel/preset-env": "^7.28.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "uuid": "^13.0.0"
+  }
 }
