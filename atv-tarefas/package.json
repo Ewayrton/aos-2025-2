@@ -6,7 +6,7 @@
     "start": "nodemon --exec babel-node ./api/app.js"
   },
   "keywords": [],
-  "author": "Ewayrton Oliveira <ewayrtonbrito@gmail.com> (https://example.com/)",
+  "author": "Ewayrton Oliveira",
   "license": "MIT",
   "type": "commonjs",
   "description": "",
