@@ -1,70 +1,57 @@
-import { v4 as uuidv4 } from 'uuid';
+import models from '../models/index.js';
 
-const tarefas = [];
-
-    //POST
-    export const criarTarefa = (req, res) => {
-        const { descricao, concluida } = req.body;
-
-        if (!descricao){
-            return res.status(400).json({ error: 'A descrição da tarefa é obrigatória.' });
-        }
-
-        const novaTarefa = {
-            objectId: uuidv4(),
-            descricao,
-            concluida: concluida || false,
-        };
-
-        tarefas.push(novaTarefa);
+//POST
+export const criarTarefa = async (req, res) => {
+    try {
+        const novaTarefa = await models.Tarefa.create(req.body);
         return res.status(201).json(novaTarefa);
-    };
-
-    //GetAll
-    export const listarTarefas = (req, res) => {
-        return res.status(200).json(tarefas);
-    };
-
-    //GetById
-    export const listarTarefasPorId = (req, res) => {
-        const { objectId } = req.params;
-        const tarefa = tarefas.find(tarefa => tarefa.objectId === objectId);
-
-        if (!tarefa) {
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        }
-        return res.status(200).json(tarefa);
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
     }
+};
 
-    //PUT
-    export const atualizarTarefa = (req, res) => {
-        const { objectId } = req.params;
-        const { descricao, concluida } = req.body;
-        const index = tarefas.findIndex(tarefa => tarefa.objectId === objectId);
+//GetAll
+export const listarTarefas = async (req, res) => {
+    const tarefas = await models.Tarefa.findAll();
+    return res.status(200).json(tarefas);
+};
 
-        if (index === -1) {
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        }    
+//GetById
+export const listarTarefaPorId = async (req, res) => {
+    const { objectId } = req.params;
+    const tarefa = await models.Tarefa.findByPk(objectId);
 
-        if (descricao !== undefined) {
-            tarefas[index].descricao = descricao;
-        }
+    if (!tarefa) {
+        return res.status(404).json({ error: 'Tarefa não encontrada.' });
+    }
+    return res.status(200).json(tarefa);
+};
 
-        if (concluida !== undefined) {
-            tarefas[index].concluida = concluida;
-        }
-        return res.status(200).json(tarefas[index]);
-    };
+//PUT
+export const atualizarTarefa = async (req, res) => {
+    const { objectId } = req.params;
+    const [updated] = await models.Tarefa.update(req.body, {
+        where: { objectId: objectId }
+    });
 
-    //DELETE
-    export const deletarTarefa = (req, res) => {
-        const { objectId } = req.params;
-        const index = tarefas.findIndex(tarefa => tarefa.objectId === objectId);
+    if (!updated) {
+        return res.status(404).json({ error: 'Tarefa não encontrada.' });
+    }    
 
-        if (index === -1) {
-            return res.status(404).json({ error: 'Tarefa não encontrada.' });
-        } 
+    const tarefaAtualizada = await models.Tarefa.findByPk(objectId);
+    return res.status(200).json(tarefaAtualizada);
+};
 
-        tarefas.splice(index, 1);
-        return res.status(200).json({ message: 'Tarefa deletada com sucesso.' });
-    };
+//DELETE
+export const deletarTarefa = async (req, res) => {
+    const { objectId } = req.params;
+    const deletada = await models.Tarefa.destroy({
+        where: { objectId: objectId }
+    });
+
+    if (!deletada) {
+        return res.status(404).json({ error: 'Tarefa não encontrada.' });
+    } 
+
+    return res.status(200).json({ message: 'Tarefa deletada com sucesso.' });
+};

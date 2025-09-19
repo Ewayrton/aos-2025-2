@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { criarTarefa,
         listarTarefas,
-        listarTarefasPorId,
+        listarTarefaPorId,
         atualizarTarefa,
         deletarTarefa 
         } from "../controllers/tarefasController.js";
@@ -16,7 +16,7 @@ import { criarTarefa,
     router.get('/', listarTarefas);
 
     //GET BY ID
-    router.get('/:objectId', listarTarefasPorId);
+    router.get('/:objectId', listarTarefaPorId);
 
     //PUT
     router.put('/:objectId', atualizarTarefa);

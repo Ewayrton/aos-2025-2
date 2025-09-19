@@ -25,3 +25,5 @@ const getTarefaModel = (sequelize, DataTypes) => {
 
     return Tarefa;
 }
+
+export default getTarefaModel;
