@@ -12,6 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/tarefas', tarefasRoutes);
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+export default app;
+//app.listen(port, () => {
+//  console.log(`Server running at http://localhost:${port}`);
+//});
