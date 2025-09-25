@@ -8,7 +8,7 @@
   "keywords": [],
   "author": "Ewayrton Oliveira",
   "license": "MIT",
-  "type": "commonjs",
+  "type": "module",
   "description": "",
   "dependencies": {
     "@babel/core": "^7.28.4",
