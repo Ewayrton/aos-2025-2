@@ -1,9 +1,9 @@
+import dotenv from 'dotenv';
+dotenv.config(); // Garanta que esta seja a primeira coisa que seu app faz
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import tarefasRoutes from './routes/tarefasRoutes.js';
-
-dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
