@@ -1,15 +1,14 @@
-{
-  "version": 2,
+ {"version": 2,
   "builds": [
     {
-      "src": "atv-tarefas/app.js",
+      "src": "index.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "atv-tarefas/app.js"
+      "dest": "index.js"
     }
   ]
 }
