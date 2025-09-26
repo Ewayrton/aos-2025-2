@@ -1,5 +1,5 @@
 import Sequelize from "sequelize";
-import getTarefaModel from "./Tarefa";
+import getTarefaModel from "./Tarefa.js";
 
 // !!! Simular a conexão com um banco de dados em memória !!! \\
 const sequelize = new Sequelize("database", "username", "password", {
