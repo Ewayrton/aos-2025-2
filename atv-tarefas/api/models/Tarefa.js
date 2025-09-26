@@ -5,7 +5,7 @@ const getTarefaModel = (sequelize, DataTypes) => {
         descricao: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: { notEmpty: true,  // A descrição não pode ser uma string vazia
+            validate: { notEmpty: true,  // Não pode ser uma string vazia
             },
         },
         concluida: {

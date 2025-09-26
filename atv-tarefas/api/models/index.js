@@ -15,8 +15,8 @@ if (!process.env.POSTGRES_URL) {
 }
 
 const sequelize = new Sequelize(process.env.POSTGRES_URL, {
-  dialect: "postgres",
-  protocol: "postgres",
+  dialect: 'postgres',
+  protocol: 'postgres',
   dialectModule: pg,
   dialectOptions: {
     ssl: {
@@ -24,7 +24,14 @@ const sequelize = new Sequelize(process.env.POSTGRES_URL, {
       rejectUnauthorized: false,
     },
   },
-  logging: false,
+  
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000, 
+    idle: 10000    
+  },
+  logging: false,
 });
 
 const models = {
