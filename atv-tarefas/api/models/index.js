@@ -2,10 +2,21 @@ import Sequelize from "sequelize";
 import getTarefaModel from "./Tarefa.js";
 
 // !!! Simular a conexão com um banco de dados em memória !!! \\
-const sequelize = new Sequelize("database", "username", "password", {
-  dialect: "sqlite",
-  storage: ":memory:",
-  logging: false, 
+//const sequelize = new Sequelize("database", "username", "password", {
+//  dialect: "sqlite",
+//  storage: ":memory:",
+//  logging: false, 
+//});
+const sequelize = new Sequelize(process.env.POSTGRES_URL, {
+  dialect: "postgres",
+  protocol: "postgres",
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+    },
+  },
+  logging: false,
 });
 
 const models = {
