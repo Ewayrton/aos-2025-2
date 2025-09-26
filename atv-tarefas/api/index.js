@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config(); // Garanta que esta seja a primeira coisa que seu app faz
+dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
