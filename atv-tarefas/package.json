@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node ./api/index.js"
+    "start": "nodemon --exec babel-node ./dev-server.js"
   },
   "keywords": [],
   "author": "Ewayrton Oliveira",
