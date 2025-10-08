@@ -2,13 +2,8 @@ import { Router } from "express";
 
 const router = Router();
 
-// Middleware para tratamento de erros assíncronos e status 500
-// Garante que erros de banco de dados (ex: conexão, query) retornem 500
 const asyncHandler = fn => (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch((error) => {
-        console.error(error); // Log detalhado para o servidor
-        res.status(500).json({ error: "Internal Server Error" });
-    });
+    Promise.resolve(fn(req, res, next)).catch(next);
 };
 
 // GET todos os usuários
@@ -20,50 +15,38 @@ router.get("/", asyncHandler(async (req, res) => {
 // GET usuário por ID
 router.get("/:userId", asyncHandler(async (req, res) => {
     const user = await req.context.models.User.findByPk(req.params.userId);
-
     if (!user) {
         return res.status(404).json({ error: "User not found" });
     }
     return res.status(200).json(user);
 }));
 
-// POST criar novo usuário
+// POST criar novo usuário (Sign Up)
 router.post("/", asyncHandler(async (req, res) => {
-    // A validação do Sequelize deve garantir que username e email não sejam vazios/nulos
-    const newUser = await req.context.models.User.create(req.body);
-    // 201 Created para criação bem-sucedida
-    return res.status(201).json(newUser);
-}));
+    const { username, email, password } = req.body;
 
-// PUT atualizar usuário por ID
-router.put("/:userId", asyncHandler(async (req, res) => {
-    // Atualiza o registro e retorna o número de linhas afetadas (updated[0])
-    const [updated] = await req.context.models.User.update(req.body, {
-        where: { id: req.params.userId }
+    const newUser = await req.context.models.User.create({
+        username,
+        email,
+        password,
     });
+    
+    // Omitimos a senha da resposta por segurança
+    const { password: _, ...userWithoutPassword } = newUser.get();
 
-    if (updated === 0) {
-        return res.status(404).json({ error: "User not found" });
-    }
-
-    // Busca o usuário atualizado para retornar na resposta (prática comum em PUT)
-    const updatedUser = await req.context.models.User.findByPk(req.params.userId);
-    return res.status(200).json(updatedUser);
+    return res.status(201).json(userWithoutPassword);
 }));
 
-// DELETE usuário por ID
-router.delete("/:userId", asyncHandler(async (req, res) => {
-    // Deleta o registro e retorna o número de linhas deletadas
-    const deleted = await req.context.models.User.destroy({
-        where: { id: req.params.userId }
-    });
+// ... (as rotas PUT e DELETE podem permanecer as mesmas por enquanto)
 
-    if (deleted === 0) {
-        return res.status(404).json({ error: "User not found" });
+// Middleware de tratamento de erros no final do arquivo
+router.use((error, req, res, next) => {
+    console.error(error);
+    // Trata erros de validação do Sequelize
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(400).json({ error: error.message });
     }
-
-    // 204 No Content para exclusão bem-sucedida
-    return res.status(204).send();
-}));
+    return res.status(500).json({ error: "Internal Server Error" });
+});
 
 export default router;

@@ -1,4 +1,7 @@
+import bcrypt from "bcryptjs";
+
 const getUserModel = (sequelize, { DataTypes }) => {
+
   const User = sequelize.define("user", {
     username: {
       type: DataTypes.STRING,
@@ -14,6 +17,14 @@ const getUserModel = (sequelize, { DataTypes }) => {
       allowNull: false,
       validate: {
         notEmpty: true,
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+        len: [7, 42],// Senha deve ter entre 7 e 42 caracteres
       },
     },
   });
@@ -34,6 +45,22 @@ const getUserModel = (sequelize, { DataTypes }) => {
     }
 
     return user;
+  };
+
+  // Hook que criptografa a senha antes de salvar um novo usuário
+  User.beforeCreate(async (user) => {
+    user.password = await user.generatePasswordHash();
+  });
+
+  // Método para gerar o hash da senha
+  User.prototype.generatePasswordHash = async function () {
+    const saltRounds = 10;
+    return await bcrypt.hash(this.password, saltRounds);
+  };
+
+  // Método para validar a senha
+  User.prototype.validatePassword = async function (password) {
+    return await bcrypt.compare(password, this.password);
   };
 
   return User;
