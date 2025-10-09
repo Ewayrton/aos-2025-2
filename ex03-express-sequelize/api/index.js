@@ -8,29 +8,21 @@ import routes from "./routes";
 const app = express();
 app.set("trust proxy", true);
 
-var corsOptions = {
-  origin: ["http://example.com", "*"],
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-};
-app.use(cors(corsOptions));
-
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path} - ${req.ip}`);
-  next();
-});
-
-
+// Middlewares essenciais
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware para injetar os models no contexto de cada requisição.
+// Removemos a lógica de usuário fixo daqui.
 app.use(async (req, res, next) => {
   req.context = {
     models,
-    me: await models.User.findByPk(1),
   };
   next();
 });
 
+// Configuração das rotas
 app.use("/", routes.root);
 app.use("/session", routes.session);
 app.use("/users", routes.user);
@@ -39,17 +31,21 @@ app.use("/tarefas", routes.tarefa);
 app.use("/login", routes.login);
 
 const port = process.env.PORT ?? 3000;
-
 const eraseDatabaseOnSync = process.env.ERASE_DATABASE === "true";
 
+// Sincroniza o banco de dados e inicia o servidor
 sequelize.sync({ force: eraseDatabaseOnSync }).then(async () => {
   if (eraseDatabaseOnSync) {
     await createUsersWithMessages();
   }
+  console.log("Banco de dados sincronizado com sucesso.");
 
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}!`);
-  });
+  // Lógica para funcionar tanto localmente quanto na Vercel
+  if (!process.env.VERCEL) {
+    app.listen(port, () => {
+      console.log(`Servidor local rodando na porta ${port}!`);
+    });
+  }
 });
 
 const createUsersWithMessages = async () => {
@@ -59,35 +55,23 @@ const createUsersWithMessages = async () => {
       email: "rwieruch@email.com",
       password: "password123",
       messages: [
-        {
-          text: "Published the Road to learn React",
-        },
-        {
-          text: "Published also the Road to learn Express + PostgreSQL",
-        },
+        { text: "Published the Road to learn React" },
       ],
     },
-    {
-      include: [models.Message],
-    }
+    { include: [models.Message] }
   );
-
   await models.User.create(
     {
       username: "ddavids",
       email: "ddavids@email.com",
       password: "password456",
       messages: [
-        {
-          text: "Happy to release ...",
-        },
-        {
-          text: "Published a complete ...",
-        },
+        { text: "Happy to release ..." },
       ],
     },
-    {
-      include: [models.Message],
-    }
+    { include: [models.Message] }
   );
 };
+
+// Exporta o app para ser usado pela Vercel
+export default app;
